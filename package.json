@@ -5,13 +5,16 @@
   "main": "index.js",
   "scripts": {
     "start": "node index",
-    "start-docker": "docker run -d --name redis-test -p 6379:6379 redis",
-    "stop-docker": "docker stop redis test",
+    "start-docker-redis": "docker run -d --name redis-test -p 6379:6379 redis",
+    "stop-docker-redis": "docker stop redis-test && docker container rm redis-test",
+    "start-docker-mysql": "docker run -p 3306:3306 -e MYSQL_DATABASE=\"mydb\" -e MYSQL_USER=\"amine\" -e MYSQL_PASSWORD=\"azerty123456.\" --name=mysql -d mysql/mysql-server",
+    "stop-docker-mysql": "docker stop mysql && docker container rm mysql",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "mysql": "^2.15.0",
     "redis": "^2.8.0"
   }
 }
