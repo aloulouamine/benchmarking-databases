@@ -1,5 +1,7 @@
 var mysql = require('mysql');
 
+import { sqlQuery } from 'common-tags';
+
 var con = mysql.createConnection({
     host: "localhost",
     user: "amine",
@@ -11,28 +13,35 @@ con.connect(function (err) {
     if (err) throw err;
     console.log("Connected!");
 
-    var sql = "CREATE TABLE IF NOT EXISTS hash (mykey VARCHAR(255), value VARCHAR(255))";
-    con.query(sql, function (err, result) {
+
+    var sqlQuery = sqlQuery`CREATE TABLE  IF NOT EXISTS article
+    (
+        id int primary key,
+        title VARCHAR(255),
+        poster VARCHAR(255),
+        score int,
+        time float
+    )`;
+    con.query(sqlQuery, function (err, result) {
         if (err) throw err;
         console.log("Table hash created");
 
         var index = 0,
-            repetitions = 1000;
+            repetitions = require('./dataset/articles-transformed.json');
 
         console.time('mysql');
-
-        while (index <= repetitions) {
-            sql = `INSERT INTO hash VALUES ('key${index}','value${index}')`;
-            console.log(sql);
-            con.query(sql, function (err, result) {
+        repetitions.forEach(article => {
+            sqlQuery = sql`INSERT INTO articles VALUES 
+            (${article.id},
+            '${article.title}',
+            '${article.poster}',
+            ${article.score},
+            ${article.time},
+        )`;
+            con.query(sqlQuery, function (err, result) {
                 if (err) throw err;
-                console.log(result);
-                if (index === repetitions) {
-                    console.timeEnd('mysql');
-                }
             });
-            index++;
-        }
+        });
     });
 
 

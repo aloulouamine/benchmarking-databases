@@ -1,8 +1,6 @@
+var data = require('./dataset/articles-transformed.json');
 var redis = require("redis"),
     client = redis.createClient();
-
-// if you'd like to select database 3, instead of 0 (default), call
-// client.select(3, function() { /* ... */ });
 
 client.on("error", function (err) {
     console.log("Error " + err);
@@ -10,10 +8,14 @@ client.on("error", function (err) {
 
 var index = 0;
 console.time('Insertion');
-while (index < 1000000) {
-    client.del(`key ${index}`);
-    index ++;
-}
+
+data.forEach(article => {
+    client.HSET(`article:${article.index}`, 'title', article.title);
+    client.HSET(`article:${article.index}`, 'link', article.link);
+    client.HSET(`article:${article.index}`, 'poster', article.poster);
+    client.HSET(`article:${article.index}`, 'time', article.time);
+    client.HSET(`article:${article.index}`, 'score', article.score);
+});
 console.timeEnd('Insertion');
 
 client.quit();
